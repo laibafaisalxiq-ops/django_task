@@ -1,6 +1,8 @@
 import logging
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 from .serializers import CompanySerializer, ExecutiveSerializer
 from .utils import get_companies, get_executives_by_company_ids
@@ -16,10 +18,24 @@ def company_list(request):
 
     logger.info("Company list API called")
 
-    companies = get_companies(limit=50)
+    try:
+        companies = get_companies(limit=50)
 
-    serializer = CompanySerializer(companies, many=True)
-    return Response(serializer.data)
+        logger.info(f"Successfully fetched {len(companies)} companies")
+
+        serializer = CompanySerializer(companies, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.exception(f"Error fetching companies: {str(e)}")
+
+        return Response(
+            {
+                "error": "Failed to fetch companies",
+                "details": str(e)
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 @api_view(['GET'])
@@ -30,9 +46,25 @@ def executive_list(request):
 
     logger.info("Executive list API called")
 
-    company_ids = [190, 199, 225, 296]
+    try:
+        company_ids = [190, 199, 225, 296]
 
-    executives = get_executives_by_company_ids(company_ids)
+        logger.info(f"Fetching executives for company IDs: {company_ids}")
 
-    serializer = ExecutiveSerializer(executives, many=True)
-    return Response(serializer.data)
+        executives = get_executives_by_company_ids(company_ids)
+
+        logger.info(f"Successfully fetched {len(executives)} executives")
+
+        serializer = ExecutiveSerializer(executives, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.exception(f"Error fetching executives: {str(e)}")
+
+        return Response(
+            {
+                "error": "Failed to fetch executives",
+                "details": str(e)
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
