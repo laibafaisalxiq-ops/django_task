@@ -5,12 +5,21 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import CompanySerializer, ExecutiveSerializer
-from .utils import get_companies, get_executives_by_company_ids
+from .utils import (
+    get_companies,
+    get_executives_by_company_ids,
+    get_users_count_with_push_notifications,
+)
+from .utils import (
+    get_users_count_with_scheduled_notifications,
+    get_industries_count,
+    get_industry_news_summary,
+)
 
-logger = logging.getLogger('app')
+logger = logging.getLogger("app")
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def company_list(request):
     """
     API endpoint to return list of companies (limited result set).
@@ -30,15 +39,12 @@ def company_list(request):
         logger.exception(f"Error fetching companies: {str(e)}")
 
         return Response(
-            {
-                "error": "Failed to fetch companies",
-                "details": str(e)
-            },
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            {"error": "Failed to fetch companies", "details": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def executive_list(request):
     """
     API endpoint to return executives for selected companies.
@@ -62,9 +68,111 @@ def executive_list(request):
         logger.exception(f"Error fetching executives: {str(e)}")
 
         return Response(
+            {"error": "Failed to fetch executives", "details": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["GET"])
+def count_users_with_push_notifications(request):
+    """
+    API endpoint to count users with push notifications enabled.
+    """
+
+    logger.info("Count users with push notifications API called")
+
+    try:
+        count = get_users_count_with_push_notifications()
+
+        logger.info(
+            f"Successfully counted {count} users with push notifications enabled"
+        )
+
+        return Response({"count": count}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.exception(f"Error counting users with push notifications: {str(e)}")
+
+        return Response(
             {
-                "error": "Failed to fetch executives",
-                "details": str(e)
+                "error": "Failed to count users with push notifications",
+                "details": str(e),
             },
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["GET"])
+def users_count_with_scheduled_notifications(request):
+    """
+    API endpoint to count users with scheduled notifications.
+    """
+
+    logger.info("Count users with scheduled notifications API called")
+
+    try:
+        count = get_users_count_with_scheduled_notifications()
+
+        logger.info(f"Successfully counted {count} users with scheduled notifications")
+
+        return Response({"count": count}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.exception(f"Error counting users with scheduled notifications: {str(e)}")
+
+        return Response(
+            {
+                "error": "Failed to count users with scheduled notifications",
+                "details": str(e),
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["GET"])
+def industries_count(request):
+    """
+    API endpoint to count total number of industries in xiQ.
+    """
+
+    logger.info("Count total number of industries in xiQ API called")
+
+    try:
+        # Assuming you have a function to get the count of industries
+        industry_count = get_industries_count()
+
+        logger.info(f"Successfully counted industries: {industry_count}")
+
+        return Response({"count": industry_count}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.exception(f"Error counting industries: {str(e)}")
+
+        return Response(
+            {"error": "Failed to count industries", "details": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["GET"])
+def industry_news_summary(request):
+    """
+    API endpoint to return industry-wise news summary.
+    """
+
+    logger.info("Industry news summary API called")
+
+    try:
+        data = get_industry_news_summary()
+
+        logger.info("Successfully fetched industry news summary")
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.exception(f"Error fetching industry news summary: {str(e)}")
+
+        return Response(
+            {"error": "Failed to fetch industry news summary", "details": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )

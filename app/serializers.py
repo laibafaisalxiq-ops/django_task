@@ -7,12 +7,8 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
 
-        fields = [
-            'companyname',
-            'twitterhandler',
-            'website',
-            'country'
-        ]
+        fields = ["companyname", "twitterhandler", "website", "country"]
+
 
 class ExecutiveSerializer(serializers.Serializer):
 
