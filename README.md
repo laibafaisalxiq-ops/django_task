@@ -4,81 +4,18 @@ A Django REST API project that provides endpoints to:
 
 - Retrieve the list of companies
 - Retrieve company executives using company IDs
+- Retrieve the count of users that have push notifications on
+- Retrieve the users with scheduled notifications
+- Retrieve the number of industries in the xiQ database
+- Retrieve the count of relevant and ignored articles for each industry
 
 ---
 
 # Features
 
 - RESTful API implementation
-- Company listing endpoint
-- Company executives endpoint
 - JSON responses
 - Django + Django REST Framework based architecture
-
----
-
-# API Endpoints
-
-## 1. Get Companies List
-
-Returns the list of all companies.
-
-### Endpoint
-
-```http
-GET /api/companies/
-```
-
-### Sample Response
-
-```json
-[
-  {
-    "id": 1,
-    "name": "ABC Corp"
-  },
-  {
-    "id": 2,
-    "name": "XYZ Ltd"
-  }
-]
-```
-
----
-
-## 2. Get Company Executives
-
-Returns executives for the provided company IDs.
-
-### Endpoint
-
-```http
-POST /company-executives/
-```
-
-### Request Body
-
-```json
-{
-  "company_ids": [1, 2]
-}
-```
-
-### Sample Response
-
-```json
-[
-  {
-    "company_id": 1,
-    "executives": [
-      {
-        "name": "John Doe",
-        "designation": "CEO"
-      }
-    ]
-  }
-]
-```
 
 ---
 
