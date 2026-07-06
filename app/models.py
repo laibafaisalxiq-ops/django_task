@@ -373,3 +373,27 @@ class Articles(models.Model):
     class Meta:
         managed = False
         db_table = "articles"
+# This is an auto-generated Django model module.
+# You'll have to do the following manually to clean this up:
+#   * Rearrange models' order
+#   * Make sure each model has one field with primary_key=True
+#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
+#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
+# Feel free to rename the models, but don't rename db_table values or field names.
+from django.db import models
+
+
+class PushScheduled(models.Model):
+    #article = models.ForeignKey('Articles', models.DO_NOTHING)
+    #user = models.ForeignKey('User', models.DO_NOTHING)
+    #dbbu = models.ForeignKey('DailyBulletinBu', models.DO_NOTHING, blank=True, null=True)
+    #company = models.ForeignKey('Company', models.DO_NOTHING, blank=True, null=True)
+    is_completed = models.IntegerField()
+    is_read = models.IntegerField()
+    created_on = models.DateTimeField()
+    updated_on = models.DateTimeField()
+    #digest_id = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'push_scheduled'
