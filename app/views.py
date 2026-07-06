@@ -19,6 +19,7 @@ from .utils import (
 logger = logging.getLogger("app")
 
 
+```python id="i0mj67"
 @api_view(["GET"])
 def company_list(request):
     """
@@ -29,6 +30,56 @@ def company_list(request):
 
     try:
         companies = get_companies(limit=50)
+
+        # Handle actual null response only
+        if companies is None:
+            logger.error("Companies queryset returned None")
+
+            return Response(
+                {"error": "No companies data available"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        logger.info(
+            "Successfully fetched %s companies",
+            companies.count(),
+        )
+
+        serializer = CompanySerializer(companies, many=True)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
+    except Exception as e:
+        logger.exception(f"Error fetching companies: {str(e)}")
+
+        return Response(
+            {
+                "error": "Failed to fetch companies",
+                "details": str(e),
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+```
+
+    """
+    API endpoint to return list of companies (limited result set).
+    """
+
+    logger.info("Company list API called")
+
+    try:
+        companies = get_companies(limit=50)
+
+        # Handle null queryset/object if companies is None
+        if not companies:
+            logger.error("Companies queryset returned None")
+            return Response(
+                {"error": "No companies data available"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         logger.info(f"Successfully fetched {len(companies)} companies")
 
@@ -44,8 +95,60 @@ def company_list(request):
         )
 
 
+```python id="d32rmf"
 @api_view(["GET"])
 def executive_list(request):
+    """
+    API endpoint to return executives for selected companies.
+    """
+
+    logger.info("Executive list API called")
+
+    try:
+        company_ids = [190, 199, 225, 296]
+
+        logger.info(
+            f"Fetching executives for company IDs: {company_ids}"
+        )
+
+        executives = get_executives_by_company_ids(company_ids)
+
+        # Handle actual null response only
+        if executives is None:
+            logger.error("Executives queryset returned None")
+
+            return Response(
+                {"error": "No executives data available"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        logger.info(
+            "Successfully fetched %s executives",
+            executives.count(),
+        )
+
+        serializer = ExecutiveSerializer(
+            executives,
+            many=True,
+        )
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
+    except Exception as e:
+        logger.exception(f"Error fetching executives: {str(e)}")
+
+        return Response(
+            {
+                "error": "Failed to fetch executives",
+                "details": str(e),
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+```
+
     """
     API endpoint to return executives for selected companies.
     """
@@ -58,6 +161,14 @@ def executive_list(request):
         logger.info(f"Fetching executives for company IDs: {company_ids}")
 
         executives = get_executives_by_company_ids(company_ids)
+
+        # Handle null queryset/object if executives is None
+        if not executives:
+            logger.error("Executives queryset returned None")
+            return Response(
+                {"error": "No executives data available"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         logger.info(f"Successfully fetched {len(executives)} executives")
 
@@ -83,6 +194,13 @@ def count_users_with_push_notifications(request):
 
     try:
         count = get_users_count_with_push_notifications()
+
+        if count is None:
+            logger.error("Push notifications count returned None")
+            return Response(
+                {"error": "Invalid push notification count"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         logger.info(
             f"Successfully counted {count} users with push notifications enabled"
@@ -113,6 +231,13 @@ def users_count_with_scheduled_notifications(request):
     try:
         count = get_users_count_with_scheduled_notifications()
 
+        if count is None:
+            logger.error("Scheduled notifications count returned None")
+            return Response(
+                {"error": "Invalid scheduled notifications count"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
         logger.info(f"Successfully counted {count} users with scheduled notifications")
 
         return Response({"count": count}, status=status.HTTP_200_OK)
@@ -141,6 +266,13 @@ def industries_count(request):
         # Assuming you have a function to get the count of industries
         industry_count = get_industries_count()
 
+        if industry_count is None:
+            logger.error("Industry count returned None")
+            return Response(
+                {"error": "Invalid industry count"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
         logger.info(f"Successfully counted industries: {industry_count}")
 
         return Response({"count": industry_count}, status=status.HTTP_200_OK)
@@ -164,6 +296,13 @@ def industry_news_summary(request):
 
     try:
         data = get_industry_news_summary()
+
+        if data is None:
+            logger.error("Industry news summary returned None")
+            return Response(
+                {"error": "No industry news summary available"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         logger.info("Successfully fetched industry news summary")
 
